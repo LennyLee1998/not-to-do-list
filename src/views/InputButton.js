@@ -6,7 +6,8 @@ export default function InputButton({onSubmitClick, onWarningShow}) {
   // button点击将value传给父组件
   function handleButtonClick(e) {
     // 只有当有值的时候才需要传回给父组件并reset
-    if(inputValue) {
+    // bug修复
+    if(inputValue.trim() !== "") {
       onSubmitClick(inputValue)
       setInputValue("")
     } else{

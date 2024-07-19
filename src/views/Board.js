@@ -1,23 +1,30 @@
-import React, {useState } from "react";
+import React, {useEffect, useState } from "react";
 import InputButton from "./InputButton";
 import ListTable from "./ListTable";
+import { getTaskList, postTaskList } from "../service/modules/board";
 
 export default function Board() {
-
   const LIST_NAME = "doList"
-  // item: isChecked
   // localStorage本地存储
-  const [doList, setDoList] = useState(JSON.parse(localStorage.getItem(LIST_NAME)) ?? []);
-  localStorage.setItem(LIST_NAME, JSON.stringify(doList))
-
+  // const [doList, setDoList] = useState(JSON.parse(localStorage.getItem(LIST_NAME)) ?? []);
+  // localStorage.setItem(LIST_NAME, JSON.stringify(doList))
+  const [doList, setDoList] = useState([])
+  async function getAllTasklist() {
+    const res = await getTaskList()
+    setDoList(res)
+  }
+  useEffect(() => {
+    getAllTasklist()
+  }, [])
   // 控制空字符串提交的时候的waring
   const [isWarning, setIsWarning] = useState(false);
 
   function handleSubmitClick(val) {
-    const newDoList = [...doList];
-    // isChecked状态提升
-    newDoList.push({name: val, isChecked: false});
-    setDoList(newDoList);
+    console.log("handleSubmitClick", val)
+    // post以后要重新请求,刷新页面/更新doList
+    postTaskList({name: val, isChecked: false}).then(_ => {
+      getAllTasklist()
+    })
   }
 
   if (isWarning) {
@@ -41,9 +48,9 @@ export default function Board() {
       </div>
       {/* 空值输入tip */}
       {/* list */}
-      <div className="mt-20 w-full px-8">
-        <ListTable doList={doList} onTableClick={setDoList} />
-      </div>
+      {doList.length === 0 ? <div className="absolute top-1/2 text-gray-600 text-xl">Please enter your done</div> : <div className="mt-20 w-full px-8">
+        <ListTable doList={doList} onQueryCB={getAllTasklist}/>
+      </div>}
     </div>
   );
 }
