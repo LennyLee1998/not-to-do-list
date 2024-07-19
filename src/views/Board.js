@@ -8,7 +8,11 @@ export default function Board() {
   // item: isChecked
   // localStorage本地存储
   const [doList, setDoList] = useState(JSON.parse(localStorage.getItem(LIST_NAME)) ?? []);
-  localStorage.setItem(LIST_NAME, JSON.stringify(doList))
+  if (doList == null) {
+    setDoList([]);
+  } else {
+    localStorage.setItem(LIST_NAME, JSON.stringify(doList));
+  }
 
   // 控制空字符串提交的时候的waring
   const [isWarning, setIsWarning] = useState(false);
